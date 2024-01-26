@@ -3,27 +3,26 @@ import { galleryItems } from './gallery-items.js';
 
 let instance = null;
 
-document.body.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && instance) {
-        instance.close();
-    }
-});
+function listenForEscapeKey(event) {
+        if (event.key === "Escape" && instance) {
+            instance.close();
+        }
+}
+
 const galleryList = document.querySelector(".gallery");
 
-for (let item of galleryItems) {
-    const galleryItem = `<div class="gallery__item">
-    <a class="gallery__link" href="#">
-      <img
-        class="gallery__image"
-        src="${item.preview}"
-        data-source="${item.original}"
-        alt="${item.description}"
-      />
-    </a>
-  </div>`
+const galleryItem = galleryItems.map((item) => `<div class="gallery__item">
+<a class="gallery__link" href="#">
+  <img
+    class="gallery__image"
+    src="${item.preview}"
+    data-source="${item.original}"
+    alt="${item.description}"
+  />
+</a>
+</div>`).join("");
 
-  galleryList.innerHTML += galleryItem
-}
+galleryList.innerHTML = galleryItem
 
 galleryList.addEventListener("click", (event) => {
     event.preventDefault()
@@ -31,17 +30,17 @@ galleryList.addEventListener("click", (event) => {
     if (event.target.dataset.source) {
         instance = basicLightbox.create(`
             <img width="1400" height="900" src="${event.target.dataset.source}">
-        `);
-
-        instance.element().addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-                instance.close();
+        `, {
+            onClose: () => {
+                document.body.removeEventListener("keydown", listenForEscapeKey);
             }
         });
 
         instance.show();
+        document.body.addEventListener("keydown", listenForEscapeKey);
     }
-})
+});
+
 
 
 // Change code below this line
