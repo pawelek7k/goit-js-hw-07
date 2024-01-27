@@ -31,13 +31,16 @@ galleryList.addEventListener("click", (event) => {
         instance = basicLightbox.create(`
             <img width="1400" height="900" src="${event.target.dataset.source}">
         `, {
+            onShow: (instance) => {
+                document.body.addEventListener("keydown", listenForEscapeKey)
+            },
+
             onClose: () => {
                 document.body.removeEventListener("keydown", listenForEscapeKey);
             }
         });
 
         instance.show();
-        document.body.addEventListener("keydown", listenForEscapeKey);
     }
 });
 
